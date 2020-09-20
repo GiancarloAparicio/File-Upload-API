@@ -5,23 +5,13 @@ namespace App\Http\Controllers;
 use App\Services\FileServices;
 use App\Traits\Response;
 use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
 
     use Response;
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -45,7 +35,7 @@ class FileController extends Controller
      */
     public function show(int $id, FileServices $fileServices)
     {
-        $file = $fileServices->showFile($id);
+        $file = $fileServices->getFileById($id);
 
         return response()->download($file->path, $file->name);
         //return $this->successResponse('File show', $file, 200);
@@ -70,10 +60,17 @@ class FileController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     * @param FileServices $fileServices
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy(int $id, FileServices $fileServices)
     {
-        //
+
+        $file = $fileServices->getFileById($id);
+        $file->delete();
+
+        File::delete($file->path);
+
+        return $this->successResponse('File delete', $file, 200);
     }
 }

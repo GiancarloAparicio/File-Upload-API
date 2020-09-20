@@ -61,11 +61,11 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
             'as' => 'photo.update'
         ]);
 
-        $router->put('/music/{id}', [
+        $router->post('/music/{id}', [
             'uses' => 'FileController@update',
             'as' => 'music.update'
         ]);
-        $router->put('/video/{id}', [
+        $router->post('/video/{id}', [
             'uses' => 'FileController@update',
             'as' => 'video.update'
         ]);

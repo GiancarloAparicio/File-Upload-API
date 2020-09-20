@@ -84,6 +84,13 @@ class FileServices
         throw new HttpException(400, 'Request is bad');
     }
 
+    public function getFileById(int $id)
+    {
+        $routeName = request()->route()[1]['as'];
+        $model = explode(".", $routeName)[0];
+        return $this->$model::findOrFail($id);
+    }
+
     /**
      * Validate that the file you want to upload is in the correct path that corresponds to it
      * 
@@ -110,11 +117,6 @@ class FileServices
         return false;
     }
 
-    public function showFile(int $id)
-    {
-        return $this->getFileById($id);
-    }
-
     public function updateFile(int $id, $file)
     {
         $this->fileValidator->validate();
@@ -139,11 +141,9 @@ class FileServices
         ]);
     }
 
-    public function getFileById(int $id)
+    public function deleteById(int $id)
     {
 
-        $routeName = request()->route()[1]['as'];
-        $model = explode(".", $routeName)[0];
-        return $this->$model::findOrFail($id);
+        return $this->getFileById($id);
     }
 }

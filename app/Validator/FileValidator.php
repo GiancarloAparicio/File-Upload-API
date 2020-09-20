@@ -43,7 +43,7 @@ class FileValidator
     public function rules()
     {
         return [
-            'file' => ['file', 'max:2048']
+            'file' => ['file', 'max:2048', 'required']
         ];
     }
 
