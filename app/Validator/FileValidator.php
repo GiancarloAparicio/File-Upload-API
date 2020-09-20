@@ -43,7 +43,7 @@ class FileValidator
     public function rules()
     {
         return [
-            'file' => ['required', 'file']
+            'file' => ['file', 'max:2048']
         ];
     }
 
@@ -52,8 +52,8 @@ class FileValidator
 
         return [
             'file.file' => 'The :attribute must be a file.',
-            'file.required' => 'The :attribute field is required.'
-
+            'file.required' => 'The :attribute field is required.',
+            'file.max' => 'The :attribute may not be greater than :max kilobytes.'
         ];
     }
 }

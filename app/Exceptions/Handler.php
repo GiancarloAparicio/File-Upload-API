@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
                 'errors' => [
                     [
                         'status' => strtolower(404),
-                        'title' => 'Model error'  . $model,
+                        'title' => 'Model error '  . $model,
                         'details' => $exception->getMessage()
                     ]
                 ]

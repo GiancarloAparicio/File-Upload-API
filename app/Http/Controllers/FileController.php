@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\FileServices;
 use App\Traits\Response;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Route;
@@ -40,26 +39,31 @@ class FileController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param FileServices $fileServices
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show(int $id, FileServices $fileServices)
     {
-        //$file = $fileServices->showFile($id);
+        $file = $fileServices->showFile($id);
 
-        return request()->routeIs('photo.show');
+        return response()->download($file->path, $file->name);
+        //return $this->successResponse('File show', $file, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param FileServices $fileServices
      * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(int $id, FileServices $fileServices, Request $request)
     {
-        //
+        $file = $fileServices->updateFile($id, $request->file);
+
+        return $this->successResponse('File update', $file, 200);
     }
 
     /**

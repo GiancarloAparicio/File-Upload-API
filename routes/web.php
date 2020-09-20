@@ -56,7 +56,7 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         ]);
 
         //Update resource
-        $router->put('/photo/{id}', [
+        $router->post('/photo/{id}', [
             'uses' => 'FileController@update',
             'as' => 'photo.update'
         ]);
