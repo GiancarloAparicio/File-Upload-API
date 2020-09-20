@@ -65,12 +65,7 @@ class FileController extends Controller
      */
     public function destroy(int $id, FileServices $fileServices)
     {
-
-        $file = $fileServices->getFileById($id);
-        $file->delete();
-
-        File::delete($file->path);
-
+        $file = $fileServices->deleteById($id);
         return $this->successResponse('File delete', $file, 200);
     }
 }

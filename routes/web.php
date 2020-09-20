@@ -56,16 +56,16 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         ]);
 
         //Update resource
-        $router->post('/photo/{id}', [
+        $router->put('/photo/{id}', [
             'uses' => 'FileController@update',
             'as' => 'photo.update'
         ]);
 
-        $router->post('/music/{id}', [
+        $router->put('/music/{id}', [
             'uses' => 'FileController@update',
             'as' => 'music.update'
         ]);
-        $router->post('/video/{id}', [
+        $router->put('/video/{id}', [
             'uses' => 'FileController@update',
             'as' => 'video.update'
         ]);

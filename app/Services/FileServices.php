@@ -6,6 +6,7 @@ use App\Models\Music;
 use App\Models\Photo;
 use App\Models\Video;
 use App\Validator\FileValidator;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class FileServices
@@ -25,29 +26,9 @@ class FileServices
         $this->fileValidator = $fileValidator;
     }
 
-    /**
-     *  Create a resource depending on the parameters it receives
-     * 
-     *  @param File $file
-     *  @param String $string
-     *  @param Model $model
-     *  @return  Model $model
-     */
-    public function createResource($file, String $type, $model)
-    {
-        $fileName = time() . $file->getClientOriginalName();
-        $destinationPath =  base_path() . '/public/uploads/' . $type . '/';
-        $file->move($destinationPath, $fileName);
-
-        return $model::create([
-            'name' => $file->getClientOriginalName(),
-            'path' => './uploads/' . $type . '/' . $fileName
-        ]);
-    }
-
 
     /**
-     * Save a file, depending if it is a photo, music or video, otherwise it 
+     * Create a file, depending if it is a photo, music or video, otherwise it 
      *  returns an exception
      * 
      *  @param File $file  (.mp3, .mp4, .svg, .jpg, .png)
@@ -59,7 +40,28 @@ class FileServices
 
         $fileType = $this->getTypeFile($file);
 
-        return $this->createResource($file, $fileType['route'], $fileType['model']);
+        return $this->saveResource($file, $fileType['route'], $fileType['model']);
+    }
+
+    /**
+     *  Save a resource depending on the parameters it receives
+     * 
+     *  @param File $file
+     *  @param String $string
+     *  @param Model $model
+     *  @return  Model $model
+     */
+    public function saveResource($file, String $type, $model)
+    {
+        $fileName = time() . $file->getClientOriginalName();
+        $destinationPath =  base_path() . '/public/uploads/' . $type . '/';
+        $file->move($destinationPath, $fileName);
+
+        $model->name = $file->getClientOriginalName();
+        $model->path = './uploads/' . $type . '/' . $fileName;
+
+        $model->save();
+        return $model;
     }
 
     /**
@@ -84,6 +86,11 @@ class FileServices
         throw new HttpException(400, 'Request is bad');
     }
 
+    /**
+     * Get a file depending on the ID, get the current path and choose the correct model
+     * @param int $id
+     * @return Model $model
+     */
     public function getFileById(int $id)
     {
         $routeName = request()->route()[1]['as'];
@@ -117,33 +124,32 @@ class FileServices
         return false;
     }
 
+    /**
+     *  Update a resource, and replace it with the $ id and the new $ file
+     * @param int $id
+     * @param File $file
+     */
     public function updateFile(int $id, $file)
     {
         $this->fileValidator->validate();
-        $type = $this->getTypeFile($file);
+        $fileType = $this->getTypeFile($file);
+        $model = $fileType['model']::findOrFail($id);
+        File::delete($model->path);
 
-        return $this->updateResource($file, $id, $type);
+        return $this->saveResource($file, $fileType['route'], $model);
     }
 
-    public function updateResource($file, $id, $type)
-    {
-        $model = $type['model']::findOrFail($id);
-
-        $name = $file->getClientOriginalName();
-        $fileName = time() . $name;
-
-        $destinationPath =  base_path() . '/public/uploads/' . $type['route'] . '/';
-        $file->move($destinationPath, $fileName);
-
-        return $model->update([
-            'name' => $name,
-            'path' => './uploads/' . $type['route'] . '/' . $fileName
-        ]);
-    }
-
+    /**
+     * Delete a resource and return it
+     *  @param int $id
+     *  @return Model $model
+     */
     public function deleteById(int $id)
     {
+        $file = $this->getFileById($id);
+        $file->delete();
+        File::delete($file->path);
 
-        return $this->getFileById($id);
+        return $file;
     }
 }
